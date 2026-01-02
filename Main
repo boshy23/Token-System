@@ -1,1 +1,177 @@
+#declaring/calling the tkinter module to use
+import tkinter as tk
+from tkinter import messagebox 
+from PIL import Image, ImageTk
+from tkinter import StringVar
+from tkinter import OptionMenu
+
+#import requests
+import re
+
+import os
+#import os
+# Path to your image file
+#    image_path = "https://1drv.ms/i/c/337774c6f90192cf/EVY-eeVrbuFNtD7ezc7Du1IBvCp9Mv6tsumVZV56My7Kwg?e=abvLMZ"
+#    ImageTk = "C:\Users\manuc\OneDrive\Desktop\KINS_Hosital.png"
+
+
+# Validate the Fields
+class MultiScreenApp:
+    # Prepare Payload 
+    #Payload = {
+    #    "name": name
+    #}    
+# Create main Window
+    def __init__(self, root): 
+        width, height = get_screen_size()
+        self.root = root
+        #root = tk.Tk()
+        self.root.title("Hospital Token Management System")
+        self.root.geometry(f"{width}x{height}")
+#Color
+        bg_color = "#add8e6"  # Light blue
+        root.configure(bg=bg_color)
+        fg_color = "black"
+
+        # Load an image using PIL #logo
+        image_path = r"C:\Users\manuc\OneDrive\Desktop\KINS_Hosital.png"  # Replace with your image file path
+        image = Image.open(image_path)
+        image = image.resize((100, 100), Image.LANCZOS)  # Resize if necessary
+        photo = ImageTk.PhotoImage(image)
+        # Create a Label widget to display the image
+        label = tk.Label(root, image=photo)
+        label.grid() # Add some padding
+
+
+        # try:
+        # Open and resize image to fit window width
+        #       img = Image.open(image_path)
+        #      img = img.resize((600, 100), Image.Resampling.LANCZOS)  # Resize to header size
+        #     photo = ImageTk.PhotoImage(img)
+        # Collect the data from UI, Validate and store the data
+        #    def submit_data(self, root):
+        #        name = entry_name.get().strip()
+        # mandate field checks 
+        #        if not name:
+        #            messagebox.showerror("Error", "Name is mandatory field")
+        #        return    
+        #Assigning the Screen Number
+        self.screen_input = 1
+        # Labels and entry fields
+        #Label-name
+        tk.Label(root, text="Name : ",bg=bg_color, fg=fg_color).grid(row=2, column=0, padx=10, pady=5)
+        self.entry_name = tk.Entry(root, width=30)
+        self.entry_name.grid(row=2, column=1, padx=10, pady=5,sticky='w')
+        #self.entry_name = tk.Entry(root, width=30).grid(row=2, column=1, padx=10, pady=5,sticky='w')
+        #Label-age
+        tk.Label(root, text="Age : ",bg=bg_color, fg=fg_color).grid(row=3, column=0, padx=5, pady=5)
+        self.entry_age = tk.Entry(root, width=3, justify='left').grid(row=3, column=1, padx=10, pady=5,sticky='w')
+        #Label-sex
+        tk.Label(root, text="Sex : ",bg=bg_color, fg=fg_color).grid(row=3, column=2, padx=10, pady=5)
+        self.entry_age = tk.Entry(root, width=2).grid(row=3, column=3, padx=10, pady=5,sticky='w')
+        #Label-address
+        tk.Label(root, text="Address : ",bg=bg_color, fg=fg_color).grid(row=4, column=0, padx=10, pady=5)
+        self.entry_age = tk.Entry(root, width=35).grid(row=4, column=1, padx=10, pady=5,sticky='w')
+        #Label-phone
+        tk.Label(root, text="Phone No : ",bg=bg_color, fg=fg_color).grid(row=5, column=0, padx=10, pady=5)
+        self.entry_age = tk.Entry(root, width=12).grid(row=5, column=1, padx=10, pady=5,sticky='w')
+        #Label-email
+        tk.Label(root, text="Email : ",bg=bg_color, fg=fg_color).grid(row=6, column=0, padx=10, pady=5)
+        self.entry_age = tk.Entry(root, width=25).grid(row=6, column=1, padx=10, pady=5,sticky='w')
+        #Button-submit
+        tk.Label(root, text="Doctor Name : ",bg=bg_color, fg=fg_color).grid(row=7, column=0, padx=10, pady=5)
+        doctors = ["Dr.Kins", "Dr.Biju", "Dr.Suvin"]
+        # Variable to store the selected option
+        self.doctor = StringVar(value="Dr.Kins")
+        # Create the dropdown menu
+        self.dropdown = OptionMenu(self.root, self.doctor, *doctors)
+        self.dropdown.grid(row=7, column=1, padx=10, pady=5,sticky='w')
+        print("doctor", self.doctor)
+        #self.entry_age = tk.Entry(root, width=25).grid(row=6, column=1, padx=10, pady=5,sticky='w')
+        #Button-submit
+        tk.Button(root, text="Submit", command=self.send_message, bg="Black", fg="white").grid(row=15, column=1, padx=20, pady=20)
+
+        #create Labels for categories
+        self.options = ["General", "Reports/Reviews", "Emergency", "VIP", "Miltary/Guests"]
+
+        # Store label widgets
+        self.labels = []
+
+        # Track selected index (-1 means none selected)
+        self.selected_index = -1
+
+        # Create labels
+        for i, text in enumerate(self.options):
+            lbl = tk.Label(
+                root,
+                text=text,
+                relief="raised",
+                width=30,
+                height=2,
+                bg="lightgray"
+            )
+            lbl.grid(row=8, column=i, padx=10, pady=5)
+            lbl.bind("<Button-1>", lambda e, idx=i: self.on_label_click(idx))
+            self.labels.append(lbl)
+
+        #Create Output Windows
+        self.Screen1 = self.create_output_window("Display Window")
+
+    def create_output_window(self, title):
+        win = tk.Toplevel(self.root)
+        win.title(title)
+        win.geometry("600x350")
+        text_area = tk.Text(win, wrap="word", state="disabled")
+        #text_area = tk.Label(win, wrap="word", state="disabled")
+        text_area.pack(expand=True, fill="both")
+        return text_area
+    
+    def send_message(self):
+        try:
+            screen_num = int(self.screen_input)
+            message = self.entry_name.get().strip()
+            self.entry_name.delete(0, tk.END)
+            if not message:
+                messagebox.showwarning("Warning", "Message cannot be empty")
+                return
+            
+            if screen_num == 1:
+                self.append_text(self.Screen1, message)
+            else:
+                 messagebox.showwarning("Warning", "screen not defined")
+        except ValueError:
+            messagebox.showerror("Error", "screen number must be interger")
+    def append_text(self, text_widget, message):
+        text_widget.config(state="normal")
+        #Clearing instead of apending
+        text_widget.delete("1.0", "end")   
+        text_widget.insert("end", message + " - BC1\n")
+        text_widget.config(state="disabled")
+    def on_label_click(self, index):
+        """Handle label click to allow only one selection."""
+        # Deselect previous
+        if self.selected_index != -1:
+            self.labels[self.selected_index].config(bg="lightgray", relief="raised")
+
+        # Select new
+        self.labels[index].config(bg="lightgreen", relief="sunken")
+        self.selected_index = index
+        self.entry_cat = self.options[index]
+        print(f"Selected: {self.options[index]}")  # For debugging
+        print(f"Selected: {self.entry_cat}")  # For debugging
+    
+
+def get_screen_size():
+    size = tk.Tk()
+    size.withdraw()
+    width = size.winfo_screenwidth()
+    height = size.winfo_screenheight()
+    #size.detroy()
+    return width, height
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MultiScreenApp(root)
+    root.mainloop()
+#root.mainloop()
 
